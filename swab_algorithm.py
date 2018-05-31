@@ -77,9 +77,10 @@ def calculate_error(s1, s2,poly_index):
     with warnings.catch_warnings():
         warnings.filterwarnings('error')
         try:
-            coefficients = numpy.polyfit(times, values, 2)
+            coefficients = numpy.polyfit(times, values, poly_index)
         except numpy.RankWarning:
             coefficients = numpy.polyfit(times, values, 1)
+            #print('======poly index change to "1" ======')
             with open("log.txt", "a") as text_file:
                 text_file.write("log : length %s \n" % len(values))
     approximated_values = numpy.poly1d(coefficients)(times)
@@ -140,11 +141,23 @@ def best_line(max_error, input_df, w, start_idx, upper_bound,poly_index):
         values = [f[0] for f in S.values.astype(numpy.float64)]
         
         # line approximation
-        approximated_values = numpy.poly1d(numpy.polyfit(times, values, poly_index))(times)
+        coefficients = numpy.polyfit(times, values, poly_index)
+# =============================================================================
+#         with warnings.catch_warnings():
+#             warnings.filterwarnings('error')
+#             try:
+#                 coefficients = numpy.polyfit(times, values, poly_index)
+#             except numpy.RankWarning:
+#                 coefficients = numpy.polyfit(times, values, (poly_index-1))
+#                 print('======poly index changed ======')
+#                 with open("best_line_LOG.txt", "a") as text_file:
+#                     text_file.write("log : length %s \n" % len(values))
+# =============================================================================
+        approximated_values = numpy.poly1d(coefficients)(times)
 
         # curve y(x) = a[0] * x + a[1]
         
-        # determine error = mean of distance between points
+        # determine error = mean of di stance between points
         error = (abs(values - approximated_values)).mean(axis=0)
         
         if error <= max_error:
@@ -169,8 +182,20 @@ def approximated_segment(in_seg,poly_index):
     times = in_seg.index.astype(numpy.int64)
     values = [f[0] for f in in_seg.values.astype(numpy.float64)]
     #print(in_seg.index[0])
-    #print(in_seg.index[-1])
-    approximated_values = numpy.poly1d(numpy.polyfit(times, values, poly_index))(times)
+    #print(in_seg.index[-1])  
+    coefficients = numpy.polyfit(times, values, poly_index)
+# =============================================================================
+#     with warnings.catch_warnings():
+#         warnings.filterwarnings('error')
+#         try:
+#             coefficients = numpy.polyfit(times, values, poly_index)
+#         except numpy.RankWarning:
+#             coefficients = numpy.polyfit(times, values,1)
+#             print('======poly index changed ======')
+#             with open("approximated_segment_lOG.txt", "a") as text_file:
+#                 text_file.write("log : length %s \n" % len(values))
+# =============================================================================
+    approximated_values = numpy.poly1d(coefficients)(times)
     #print(approximated_values[-2])
 
     new_seg = pd.Series([approximated_values[0], approximated_values[-1]], index=[in_seg.index[0],in_seg.index[-1]]).to_frame()
@@ -477,8 +502,8 @@ if __name__ == '__main__':
     
     #===condition====
     wdlength=11# window length must odd ,wd_length >2N+1
-    Ord=2
-    pIndex=2
+    Ord=3
+    pIndex=3
     diff=2 #  反應差
     limit_interval_percent= 0.02
     limit_r2=0.95
@@ -516,7 +541,7 @@ if __name__ == '__main__':
                                  polyOrd=Ord
                                  ))
         dfpolyMeanDay=pd.DataFrame(ltMean,columns=Meanheader)
-        print('wd Length: ',w,'polyOrd: ',Ord,'polyIndex:',pIndex,'window size:',200)
+        print('wd Length: ',w,'polyOrd: ',Ord,'polyIndex:',pIndex,'window size:',10)
         MeanCsvfileName=dirMean+'\\2018_Mean_R2Data.csv'
         if(sensorType=='T'):
             dfpolyMeanDay.to_csv(MeanCsvfileName,mode='w',index=None)
