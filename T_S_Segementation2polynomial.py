@@ -16,6 +16,7 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 import datetime
 import warnings
+from numpy.polynomial import chebyshev as chy
 cf.go_offline()
 mypath ='excelFolder/'
 
@@ -155,7 +156,7 @@ def Seg2poly(fileName,wd_length,polyOrd,limit_diff,limit_r2,polyIndex,limit_inte
     if(sensor=='T'):
         print(fileName)
         dirSnr=sensor+'\\'
-        dirT='Data_csv\\SlidingWindow\\'+dirSnr+'PolyOrd\\'+str(polyOrd)+'\\PolyIndex\\'+str(polyIndex)+'\\WD_Length\\'+str(wd_length) 
+        dirT='Data_csv\\SlidingWindow\\Chebyshev\\'+dirSnr+'PolyOrd\\'+str(polyOrd)+'\\PolyIndex\\'+str(polyIndex)+'\\WD_Length\\'+str(wd_length) 
         mkfolder(dirT)
         #===condition====
         #diff=2 #  反應差
@@ -197,8 +198,13 @@ def Seg2poly(fileName,wd_length,polyOrd,limit_diff,limit_r2,polyIndex,limit_inte
                         y.append(float(sgf[j]))
                         vt.append(float(data[j]))  
 #=================Polyfit 回歸多項式 =========
-                    tp=np.polyfit(x,y,polyIndex)
-                    ys_line=np.polyval(tp,x)
+# =============================================================================
+#                     tp=np.polyfit(x,y,polyIndex)
+#                     ys_line=np.polyval(tp,x)
+# =============================================================================
+#=================chebyshev 回歸多項式 =========
+                    c=chy.chebfit(x,y,polyIndex)
+                    ys_line=chy.chebval(x,c)                    
 #=================rsq: 決定係數=========
                     rsqSGF=round(coeff_of_determination(np.array(y),ys_line,startPt,endPt),3)
                     rsqTT=round(coeff_of_determination(np.array(vt),ys_line,startPt,endPt),3)
@@ -214,8 +220,13 @@ def Seg2poly(fileName,wd_length,polyOrd,limit_diff,limit_r2,polyIndex,limit_inte
                         y.append(float(sgf[j]))
                         vt.append(float(data[j]))
 #=================Polyfit 回歸多項式 =========
-                    tp=np.polyfit(x,y,polyIndex)
-                    ys_line=np.polyval(tp,x)
+# =============================================================================
+#                     tp=np.polyfit(x,y,polyIndex)
+#                     ys_line=np.polyval(tp,x)
+# =============================================================================
+#=================chebyshev 回歸多項式 =========
+                    c=chy.chebfit(x,y,polyIndex)
+                    ys_line=chy.chebval(x,c)
 #=================rsq: 決定係數=========
                     rsqSGF=round(coeff_of_determination(np.array(y),ys_line,startPt,endPt),3)
                     rsqTT=round(coeff_of_determination(np.array(vt),ys_line,startPt,endPt),3)
@@ -307,7 +318,7 @@ def Seg2poly(fileName,wd_length,polyOrd,limit_diff,limit_r2,polyIndex,limit_inte
                     'R2_Raw':R2_PnR,
                     'R2_SGF':R2_PnS
                     }
-        dirT='Data_csv\\SlidingWindow\\'+dirSnr+'PolyOrd\\'\
+        dirT='Data_csv\\SlidingWindow\\Chebyshev\\'+dirSnr+'PolyOrd\\'\
         +str(polyOrd)+'\\PolyIndex\\'+str(polyIndex)+'\\WD_Length\\'+str(wd_length) 
         mkfolder(dirT)
         header=['start','end','Delta','R2_Raw','R2_SGF']
@@ -341,7 +352,7 @@ fileName=getFileName(mypath)
 #print(fileName)
 #===condition====
 wd_length=11# window length must odd ,wd_length >2N+1
-Ord=2
+Ord=3
 pIndex=3
 diff=2 #  反應差
 limit_interval_percent= 0.02
@@ -351,7 +362,7 @@ limit_r2=0.95
  
 #wd_length
 for w in range(wd_length,45,2):
-    dirMean='Data_csv\\SlidingWindow\\Mean\\PolyOrd\\'\
+    dirMean='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\PolyOrd\\'\
     +str(Ord)+'\\PolyIndex\\'+str(pIndex)+'\\WD_Length\\'+str(w)
     mkfolder(dirMean)
     #print('wd Length: ',wd_length,'polyOrd: ',polyOrd)
