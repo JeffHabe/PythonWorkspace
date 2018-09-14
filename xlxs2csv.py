@@ -12,16 +12,22 @@ from openpyxl import load_workbook
 #2018/1/1 
 start_day=1514764800
 Sec_perday=86400
-def get_sec(time_str,d):
+Sec_perMth=2678400
+def get_sec(time_str,mth,d):
     h, m, s = str(time_str).split(':')
-    return int(start_day) + int(Sec_perday)*int(d-1) + int(h) * 3600 + int(m) * 60 + int(s)
+    month=(Sec_perMth)*(mth-1)
+    day=(Sec_perday)*(d-1)
+    time=int(start_day) + month + day + int(h) * 3600 + int(m) * 60 + int(s)
+    #print(time)
+    return time
 
 # Assign spreadsheet filename to `file`
-file = 'excelFolder\\RawData\\2018 LFS Sensor Data.xlsx'
+#file = 'excelFolder\\RawData\\2018 LFS Sensor Data.xlsx'
+file = 'excelFolder\\RawData\\TestDelay.xlsx'
 wb=load_workbook(file)
 sheetName=[]
-#print(len(wb.worksheets))
 for i in range(len(wb.worksheets)):
+#print(len(wb.worksheets))
     sheet=wb.worksheets[i]
 # =============================================================================
 # print(wb.worksheets[1].title)
@@ -30,14 +36,22 @@ for i in range(len(wb.worksheets)):
 # =============================================================================    
     data = sheet.values
     #print(list(data))
-    cols = next(data)[0:]
+    #print(next(data)[0:])
+    cols = next(data)[0:] 
     data=list(data)
     #print(len(cols))
+    month=int(sheet.title[:2])
+    #print(month)
+    day=int(sheet.title[3:5])
+    #print(month)
     #print(len(data[0]))
     idx=[r[0]for r in data]
     data = (itetls.islice(r, 0, None,2) for r in data)
+    #print(cols)
     if(len(cols)>=10):
         df=pd.DataFrame(data,columns=['時間','H1','H2','H3','T1','T2','T3'])
+    elif(len(cols)<=3):
+        df=pd.DataFrame(data,columns=['時間','Value'])
     else:
         df=pd.DataFrame(data,columns=['時間','H1','H2','T1','T2'])
     #print(df.shape[1])
@@ -45,8 +59,9 @@ for i in range(len(wb.worksheets)):
     times=[]
     for j in range(1,df.shape[1]):
         print( sheet.title+'_'+df.columns[j]+' start')
-        fileName=filePath+ sheet.title+"_"+df.columns[j] +".csv"  
-        times=[get_sec(t,int(sheet.title[3:5])) for t in df['時間']]
+        fileName=filePath+ sheet.title+"_"+df.columns[j] +".csv"
+
+        times=[get_sec(t,month,day) for t in df['時間']]
         first=True
         newtimesTop=[]
         newtimesBottom=[]
