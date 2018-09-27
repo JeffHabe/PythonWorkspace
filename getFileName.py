@@ -11,7 +11,12 @@ mypath ='excelFolder'
 # onlyfiles=[f for f in listdir(mypath) if isfile(join(mypath, f))]
 # print(onlyfiles)
 # =============================================================================
+t={'index':'date'}
+n=0
 for (dirpath, dirnames, filenames) in walk(mypath):
-    f=list(filenames[i][:-4] for i in range(len(filenames)))
-    break
-print(f[1][6:])
+    f=list(filenames[i][:-4]for i in range(len(filenames)))    
+    idx=list(i for i in range(len(filenames)))    
+    for n in range(len(filenames)):
+        print(n,':',filenames[n][:-4])
+    #break
+#print(t)
