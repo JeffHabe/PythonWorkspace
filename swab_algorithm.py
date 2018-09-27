@@ -13,7 +13,7 @@ import cufflinks as cf
 import plotly.graph_objs as go
 from plotly.offline import plot
 import warnings
-
+from numpy.polynomial import chebyshev as chy
 
 cf.go_offline()
 pltData=[]
@@ -78,12 +78,17 @@ def calculate_error(s1, s2,poly_index):
         warnings.filterwarnings('error')
         try:
             coefficients = numpy.polyfit(times, values, poly_index)
+            #=================chebyshev 回歸多項式 =========
+            #coefficients=chy.chebfit(times,values,poly_index)
         except numpy.RankWarning:
             coefficients = numpy.polyfit(times, values, 1)
+            #coefficients=chy.chebfit(times,values,poly_index)
             #print('======poly index change to "1" ======')
             with open("log.txt", "a") as text_file:
                 text_file.write("log : length %s \n" % len(values))
     approximated_values = numpy.poly1d(coefficients)(times)
+    #print(coefficients)
+    #approximated_values = chy(coefficients)(times)
     # Error measure
     mean_distance = (abs(values - approximated_values)).mean(axis=0)   
     return mean_distance
@@ -142,6 +147,7 @@ def best_line(max_error, input_df, w, start_idx, upper_bound,poly_index):
         
         # line approximation
         coefficients = numpy.polyfit(times, values, poly_index)
+        #coefficients=chy.chebfit(times,values,poly_index)
 # =============================================================================
 #         with warnings.catch_warnings():
 #             warnings.filterwarnings('error')
@@ -184,6 +190,7 @@ def approximated_segment(in_seg,poly_index):
     #print(in_seg.index[0])
     #print(in_seg.index[-1])  
     coefficients = numpy.polyfit(times, values, poly_index)
+    #coefficients=chy.chebfit(times,values,poly_index)
 # =============================================================================
 #     with warnings.catch_warnings():
 #         warnings.filterwarnings('error')
@@ -261,6 +268,7 @@ def swab(raw_df,input_df, max_error, seg_num, in_window_size,poly_index):
         #print(values)
         #print(r_values)
         # line approximation
+        #fun_Coef.append(chy.chebfit(times,values,poly_index))
         fun_Coef.append(numpy.polyfit(times, values, poly_index))
         approximated_values = numpy.poly1d(fun_Coef[-1])(times)
         
@@ -381,13 +389,11 @@ def swab_alg(df,fileName, max_error = 0.1, window_size = 3, label_time = "timest
     res_list=seg_dt['seg_ts']
     # 3. assign value now depending on slope of curve
     # 1. plot points
-# =============================================================================
-#     if plot_it:
-#         #plt.plot(pre_df.index, pre_df.values, "c--", linestyle="-")
-#         #print(pltData)
-#         PlotLy(pltData,fileName,polyOrd,polyIndex,wd_length)
-#         #plt.show()
-# =============================================================================
+    if plot_it:
+        #plt.plot(pre_df.index, pre_df.values, "c--", linestyle="-")
+        #print(pltData)
+        PlotLy(pltData,fileName,polyOrd,polyIndex,wd_length)
+        #plt.show()
     # pass result segments to dataframe
     res_df = []
     first = True
@@ -501,15 +507,15 @@ if __name__ == '__main__':
  
     
     #===condition====
-    wdlength=11# window length must odd ,wd_length >2N+1
+    wdlength=21# window length must odd ,wd_length >2N+1
     Ord=3
-    pIndex=3
+    pIndex=2
     diff=2 #  反應差
     limit_interval_percent= 0.02
     limit_r2=0.95
      
     #wd_length
-    for w in range(wdlength,45,2):
+    for w in range(wdlength,23,2):
         dirMean='Data_csv\\SWAB\\Mean\\PolyOrd\\'+str(Ord)+'\\PolyIndex\\'+str(pIndex)+'\\WD_Length\\'+str(w)
         mkfolder(dirMean)
         #print('wd Length: ',wd_length,'polyOrd: ',polyOrd)
@@ -517,7 +523,7 @@ if __name__ == '__main__':
         #for i  in range(len(fileName)):
         count_T=0
         ltMean=[]
-        for i  in range(0,len(fileName)):
+        for i  in range(0,3):
             sensorType=fileName[i][6:-1]  
             if(sensorType=='T'):
                 t=[]
@@ -530,7 +536,7 @@ if __name__ == '__main__':
                 print(fileName[i])
                 input_df = pd.read_csv(mypath+fileName[i]+".csv", delimiter =",")
                 ltMean.append(swab_alg(input_df,fileName[i], 
-                                 max_error = 0.1, 
+                                 max_error = 5, 
                                  window_size = 10,
                                  label_time = "timestamp",
                                  label_value = "value",
