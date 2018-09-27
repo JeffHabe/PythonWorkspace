@@ -9,9 +9,10 @@ start=4
 print(len(x))
 print()
 end=12
+t=9
 delta=end-start
 for i in range(end,start-1,-1):
     print (x[i],' ',i)
-for w in range(11,46,2):
-    wd_length=w
-    print(wd_length)
+for w in range(0,5,1):
+    t-=1
+    print(t/100)
