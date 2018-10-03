@@ -120,6 +120,8 @@ def SQLdelete():
     cursor = db.cursor()
     SQLdel=""" 
     delete from recording_data 
+    where 
+    [timestamp]>=#2018/12/3#; 
     """
 # =============================================================================
 #     SQLdel=""" 
@@ -190,66 +192,103 @@ if __name__=="__main__":
 
   
     
-    
+      
 # =============================================================================
 #     #Delete 
 #     SQLdelete()
 #     compactAccessDB()
 #     print()
-#      
 # =============================================================================
-    compactAccessDB()
-    
- ##Insert Into test sensor data for test limited db capacity 
-    usetime=[]
-    startYear=2019
-    startDay=8
-    startMth=4
-    stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
-    for day in range(startDay,startDay+365):    
-        date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
-        value=mkData.f(date)
-        print(date[0])
-        data=[]
-
-        
-        for sensor_id in range(1,8):
-            for node_id in range(1,17):               
-                for i in range(len(date)):
-                    #print(len(value))    
-                    t=(node_id,sensor_id,date[i],value[i])
-                    #print(t)
-                    data.append(t)
-                #print(data[0][:2],'-',data[len(data)-1][:2])
-        try:
-            thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
-            edDate=thisDate.date().strftime("%m-%d")
-            usetime.append(SQLsDatainsert(data))
-        except Exception:
-            break
-    rawfilesize=get_FileSize()
-    compactAccessDB()
-    compfilesize=get_FileSize()
-    print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
-    record=[{'time':round(np.mean(usetime),2),
-              'start_Date':stDate,
-              'end_Date':edDate,
-              'Compact Size':compfilesize}]
-    print("record",record)
-    df=pd.DataFrame(record,index=None)   
-    df.to_csv('Insertinto_spend_Time.csv',mode='a',columns=['time','start_Date','end_Date'],index=False)
-        #finally:
-            #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
-  
-    
-
-    
-  
- 
- 
- 
- 
+     
 # =============================================================================
+#     compactAccessDB()
+# =============================================================================
+    
+# =============================================================================
+#  ##Insert Into test sensor data for test limited db capacity 
+#     usetime=[] 
+#     startYear=2018
+#     startDay=3
+#     startMth=12
+#     stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
+#     for day in range(startDay,startDay+1):    
+#         date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
+#         value=mkData.f(date)
+#         print(date[0])
+#         data=[]      
+#         for sensor_id in range(1,8):
+#             for node_id in range(1,17):               
+#                 for i in range(len(date)):
+#                     #print(len(value))    
+#                     t=(node_id,sensor_id,date[i],value[i])
+#                     #print(t)
+#                     data.append(t)
+#                 #print(data[0][:2],'-',data[len(data)-1][:2])
+#         try:
+#             thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
+#             edDate=thisDate.date().strftime("%m-%d")
+#             usetime.append(SQLsDatainsert(data))
+#         except Exception:
+#             break
+#     rawfilesize=get_FileSize()
+#     compactAccessDB()
+#     compfilesize=get_FileSize()
+#     print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
+#     record=[{'time':round(np.mean(usetime),2),
+#               'start_Date':stDate,
+#               'end_Date':edDate,
+#               'Compact Size':compfilesize}]
+#     print("record",record)
+#     df=pd.DataFrame(record,index=None)   
+#     df.to_csv('Insertinto_detailData.csv',mode='a',columns=['time','start_Date','end_Date','Compact Size'],index=False)
+#         #finally:
+#             #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
+#   
+# =============================================================================
+    
+    
+    
+    
+
+# =============================================================================
+# ##查詢結果
+#     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
+#     sqlUtil=MysqlUtil()
+#     db = sqlUtil.getConnect()
+#     cursor = db.cursor()
+#     SQL="""
+#     select value, timestamp
+#     from recording_data
+#     where [timestamp] >= #2018/12/3 00:00:00# and
+#     [timestamp] <= #2018/12/3 23:59:59#
+#     """            
+#     tStart = time.time()#計時開始
+#     data=[]
+#     timestamp=[]      
+#     for row in cursor.execute(SQL):                  # cursors are iterable
+#         #print (row[0])
+#         data.append(float(row[0]))
+#         timestamp.append(row[1])
+#     cursor.commit()
+#     #print(data)
+#     cursor.close()
+#     db.close()
+#     tEnd = time.time()#計時結束
+#     timer=tEnd-tStart
+#     fig,ax1=plt.subplots()
+#     ax2=ax1.twinx()
+#     ax1.plot(timestamp,data,'r-')
+#     plt.gcf().autofmt_xdate()
+#     plt.show()
+#     print('執行時間：',timer,'。data 總數 ',len(data))
+# =============================================================================
+
+
+
+
+
+# =============================================================================
+#  
 #     ##比對原始數據與資料庫數據
 #     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
 #     sqlUtil=MysqlUtil()
@@ -319,8 +358,8 @@ if __name__=="__main__":
 #     print('執行時間：',timer,'。data 總數 ',len(data))
 #     print()
 #     
+#     
 # =============================================================================
-    
  
 # =============================================================================
 # #==========一般Select================================================#   

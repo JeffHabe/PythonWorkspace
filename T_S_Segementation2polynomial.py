@@ -445,9 +445,9 @@ Ord=5
 pIndex=5
 Last=5
 angle=15#  反應差  1 2 3 4 5  10 20 30
-wdsize_percent=0.1#
+wdsize_percent=0.5#
 min_interval_percent=0.01
-min_r2=0.90#固定
+min_r2=0.99#固定
 Isplot=True
 
 
@@ -459,7 +459,7 @@ rndFile=random.randint(0,len(fileName)-1)
 
 test1=[52]
 test=[0,29,49,126]
-
+test=[64,65]
 test1=[0]
 
 count=0
@@ -490,7 +490,7 @@ while(pIndex<=5):
     count_T=0
     ltMean=[]
     i=rndFile
-    for i in test1 :#len(fileName)
+    for i in test :#len(fileName)
     #for i in range(0,len(fileName)): 
         #i=rndFile
         sensorType=fileName[i][6:-1] 
