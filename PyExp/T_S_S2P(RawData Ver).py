@@ -17,7 +17,7 @@ import randomSampling as rSp
 import plotTool as pltT
 import mathTool as mthT
 import time
-
+import datetime as dt
 
 
 mypath ='excelFolder/'
@@ -70,11 +70,25 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
     #plt.plot(t,v,'-')
     #plt.plot(t,sgf,'-')
     angle=int(round((np.arctan(max_slope)*180)/pi))
+# =============================================================================
+#     if(len(t)>100):
+#         pass
+#     else:
+#         window_size_percent=1
+# =============================================================================
     interval=int(len(t)*window_size_percent)-1
     start=[]
     end=[]
     #intervalAry=[]
     coef_ary=[]
+    coeff_5=[]
+    coeff_4=[]
+    coeff_3=[]
+    coeff_2=[]
+    coeff_1=[]
+    coeff_0=[]
+    
+    decompData=[]
     #first_inl=0
     R2_PnS=[]
     R2_PnR=[]
@@ -90,6 +104,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
     ys_line=[]
     tot_segNum=0
     dirSnr=''
+    DeltaCnt=0
     if(sensor=='T'):
         print(fileName)
         dirSnr=sensor+'\\'
@@ -97,16 +112,20 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
         print(fileName)
         dirSnr=sensor+'\\'
     #dirFoder='Data_csv\\SlidingWindow\\Chebyshev\\'+dirSnr+'\\Poly_Index '+str(pIndex)+'\\max angle '+str(angle) #'\\Poly_Index '+str(pIndex)+'\\SGwd_length '+str(SGwd_length)
+    #dirFoder='Data_csv\\SlidingWindow\\Chebyshev\\'+dirSnr
     dirFoder='Data_csv\\SlidingWindow\\Chebyshev\\'+dirSnr
     fT.mkfolder(dirFoder)
+    dirWCdetailFolder='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data\\'
+    fT.mkfolder(dirWCdetailFolder)
     #===condition====
     #max_slope=2 #  反應差
     min_time_interval= int(len(t)*min_interval_percent)
     c=1
     segNum=0
 
-    while(startPt<(len(t)-1)):
+    while(startPt<(len(t))):
         #MaxStart=0
+        
         islimit=False
 # =============================================================================
 #             
@@ -115,6 +134,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
 #     
 # =============================================================================
         for i in range(interval,startPt-1,-1):
+             
             if ((i-startPt)>min_time_interval):
                 endPt=i+1
                 delta=endPt-startPt
@@ -128,7 +148,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
                 break
             elif((i-startPt)<=min_time_interval+1):
                 if(Maxr2SGF==0):
-                    endPt=i+1
+                    endPt=len(t)
                     delta=endPt-startPt
                     coeff,ys_line,rsqSGF,rsqTT = mthT.polyLine(startPt,endPt,polyIndex,t,sgf,data)
                     islimit=True
@@ -153,10 +173,27 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
 #                 print(i)
 #                 print(startPt)
 # =============================================================================
-            start.append(startPt)
-            end.append(endPt)
-            coef_ary.append(coeff)
+            start.append(times[startPt])
+            if(endPt!=len(times)):    
+                end.append(times[endPt])
+                #print(len(times),':',endPt)
+            else:
+                end.append(times[endPt-1])
+                #print(len(times),':',endPt)
+            #coef_ary.append(coeff)
+            coeff_5.append(coeff[0])
+            coeff_4.append(coeff[1])
+            coeff_3.append(coeff[2])
+            coeff_2.append(coeff[3])
+            coeff_1.append(coeff[4])
+            coeff_0.append(coeff[5])
             Dlta.append(delta)
+
+            for deCdata in ys_line:
+                decompData.append(deCdata)
+                
+            DeltaCnt =DeltaCnt+endPt-startPt
+           # print(len(decompData),'Delta=',DeltaCnt)
             global pltData
             pltData += [
                 go.Scatter(
@@ -170,7 +207,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
                             )
                     )]
             c+=1
-            print(startPt,"-",endPt)
+            #print(startPt,"-",endPt)
             R2_PnR.append(round(rsqTT,3))
             R2_PnS.append(round(rsqSGF,3))
             startPt= endPt
@@ -190,26 +227,45 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
             
     tEnd = time.time()#計時結束
 #=================每一天壓縮後數據==================================
-# =============================================================================
-#     dtPolyData={'start':start,
-#                 'end':end,
-#                 'min_r2':min_r2,
-#                 'poly n':pIndex,
-#                 'wd_size%':wdsize_percent,
-#                 'min_interval%':min_interval_percent,
-#                 'angle':angle,
-#                 'coef':coef_ary,
-#                 'Delta':Dlta,
-#                 'R2_Raw':R2_PnR,
-#                 'R2_SGF':R2_PnS
-#                 }
-#     
-#     header=['start','end','min_r2','poly n','wd_size%','min_interval%','angle','Delta','R2_Raw','coef']
-#     dfpolyDtlData=pd.DataFrame(dtPolyData,columns=header,index=None)
-#     SnrCsvfileName=dirFoder+'\\'+fileName+"_DetailData.csv"
-#     #==each day polynorimal data
-#     dfpolyDtlData.to_csv(SnrCsvfileName,mode='a')
-# =============================================================================
+    dtPolyData={'start':start,
+                'end':end,
+                'min_r2':min_r2,
+                'poly n':pIndex,
+                'wd_size%':wdsize_percent,
+                'min_interval%':min_interval_percent,
+                'angle':angle,
+                'coef':coef_ary,
+                'coeff_5':coeff_5,
+                'coeff_4':coeff_4,
+                'coeff_3':coeff_3,
+                'coeff_2':coeff_2,
+                'coeff_1':coeff_1,
+                'coeff_0':coeff_0,
+                'Delta':Dlta,
+                'R2_Raw':R2_PnR,
+                'R2_SGF':R2_PnS
+                }
+    
+    headerPD=['start','end','coeff_5','coeff_4','coeff_3','coeff_2','coeff_1','coeff_0','R2_Raw','Delta']
+    dfpolyDtlData=pd.DataFrame(dtPolyData,columns=headerPD,index=None)
+    
+    SnrCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DetailData.csv"
+    #==each day polynorimal data
+    dfpolyDtlData.to_csv(SnrCsvfileName,mode='w')
+
+    print('總結:times=',len(times),'deCompDaya=',len(decompData))
+    
+    dtdeCData={'times':times,
+            'Data':decompData
+            }
+    
+    headerDC=['times','Data']
+    dfdeCData=pd.DataFrame(dtdeCData,columns=headerDC,index=None)
+    
+    deCompCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DecompressionDetailData.csv"
+    #==each day polynorimal data
+    dfdeCData.to_csv(deCompCsvfileName,mode='w')
+    
     
     segNum=len(start)# num of segement 
     tot_segNum+=segNum# total number of segements in all data 
@@ -244,7 +300,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
     #print(pltData)
     
     if isplot:
-        pltT.PlotLy(t,wdsize_percent,min_interval_percent,polyIndex,fileName,pltData,isOpen)
+        pltT.PlotLy(t,wdsize_percent,min_interval_percent,polyIndex,fileName,pltData,plotisOpen)
     return dtMean
 
 
@@ -265,7 +321,7 @@ if __name__ =="__main__":
     
 
     Isplot=True
-    isOpen=True
+    plotisOpen=False
     #rndFile=88#random.randint(0,len(fileName))
     count=0
     reset=True
@@ -274,7 +330,12 @@ if __name__ =="__main__":
     spTimer=[]
     OldSplist=[]
     spNum=30
-    test=[64]
+    #test=list(range(80,86))
+    testList=[4,16,20,27,29,30,36,37,42,45,49,62,66,67,68,
+              71,74,84,90,93,96,105,108,109,110,111,132,139,
+              148,155
+              ]
+    test=[29]
     while(count<1):
         count+=1
         max_slope=np.tan(angle*(pi/180))
@@ -305,9 +366,9 @@ if __name__ =="__main__":
         #for i  in range(len(fileName)):
         count_T=0
         ltMean=[]
-        spList=rSp.Sampling(len(fileName),spNum,OldSplist)
+        spList=rSp.Sampling(len(fileName),spNum,OldSplist)##簡單隨機抽樣樣品 list
         OldSplist.append(spList)
-        for i in test :#len(fileName)
+        for i in testList :#len(fileName)
             #i=rndFile
             sensorType=fileName[i][6:-1]  
             #print(sensorType)
@@ -417,6 +478,7 @@ if __name__ =="__main__":
                     'STD_All',
                     'TimerMean'
                     ]
+        #tolMeanFile='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllMeanRaw&Poly.csv'
         tolMeanFile='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllMeanRaw&Poly.csv'
         dftolMean=pd.DataFrame(tolMean,columns=tolMheader)
         #print(dftolMean)
