@@ -27,7 +27,7 @@ def readCSV(mypath,fileName):
     f = open(mypath+fileName+'.csv', 'r')
     for row in csv.DictReader(f):
         ms=float(row['timestamp'])
-        date=datetime.datetime.fromtimestamp(ms)
+        date=datetime.datetime.utcfromtimestamp(ms)
         #print(date)
         times.append(date)
         data.append(float(row['value']))
