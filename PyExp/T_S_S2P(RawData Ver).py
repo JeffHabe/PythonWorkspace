@@ -226,46 +226,50 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
             interval-=1
             
     tEnd = time.time()#計時結束
-#=================每一天壓縮後數據==================================
-    dtPolyData={'start':start,
-                'end':end,
-                'min_r2':min_r2,
-                'poly n':pIndex,
-                'wd_size%':wdsize_percent,
-                'min_interval%':min_interval_percent,
-                'angle':angle,
-                'coef':coef_ary,
-                'coeff_5':coeff_5,
-                'coeff_4':coeff_4,
-                'coeff_3':coeff_3,
-                'coeff_2':coeff_2,
-                'coeff_1':coeff_1,
-                'coeff_0':coeff_0,
-                'Delta':Dlta,
-                'R2_Raw':R2_PnR,
-                'R2_SGF':R2_PnS
-                }
-    
-    headerPD=['start','end','coeff_5','coeff_4','coeff_3','coeff_2','coeff_1','coeff_0','R2_Raw','Delta']
-    dfpolyDtlData=pd.DataFrame(dtPolyData,columns=headerPD,index=None)
-    
-    SnrCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DetailData.csv"
-    #==each day polynorimal data
-    dfpolyDtlData.to_csv(SnrCsvfileName,mode='w')
-
-    print('總結:times=',len(times),'deCompDaya=',len(decompData))
-    
-    dtdeCData={'times':times,
-            'Data':decompData
-            }
-    
-    headerDC=['times','Data']
-    dfdeCData=pd.DataFrame(dtdeCData,columns=headerDC,index=None)
-    
-    deCompCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DecompressionDetailData.csv"
-    #==each day polynorimal data
-    dfdeCData.to_csv(deCompCsvfileName,mode='w')
-    
+# =============================================================================
+# #=================每一天壓縮後數據==================================
+#     #==each day polynorimal data
+#     dtPolyData={'start':start,
+#                 'end':end,
+#                 'min_r2':min_r2,
+#                 'poly n':pIndex,
+#                 'wd_size%':wdsize_percent,
+#                 'min_interval%':min_interval_percent,
+#                 'angle':angle,
+#                 'coef':coef_ary,
+#                 'coeff_5':coeff_5,
+#                 'coeff_4':coeff_4,
+#                 'coeff_3':coeff_3,
+#                 'coeff_2':coeff_2,
+#                 'coeff_1':coeff_1,
+#                 'coeff_0':coeff_0,
+#                 'Delta':Dlta,
+#                 'R2_Raw':R2_PnR,
+#                 'R2_SGF':R2_PnS
+#                 }
+#     headerPD=['start','end','coeff_5','coeff_4','coeff_3','coeff_2','coeff_1','coeff_0','R2_Raw','Delta']
+#     dfpolyDtlData=pd.DataFrame(dtPolyData,columns=headerPD,index=None)
+#     SnrCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DetailData.csv"
+#     dfpolyDtlData.to_csv(SnrCsvfileName,mode='w')
+#     print('總結:times=',len(times),'deCompDaya=',len(decompData))
+#     
+#     
+#     
+#     
+#     
+#     #==each day deCompression data
+#     dtdeCData={'times':times,
+#             'Data':decompData
+#             }
+#     
+#     headerDC=['times','Data']
+#     dfdeCData=pd.DataFrame(dtdeCData,columns=headerDC,index=None)
+#     
+#     deCompCsvfileName='Data_csv\\SlidingWindow\\Chebyshev\\Worst compressing data'+'\\'+fileName+"_DecompressionDetailData.csv"
+# 
+#     dfdeCData.to_csv(deCompCsvfileName,mode='w')
+#     
+# =============================================================================
     
     segNum=len(start)# num of segement 
     tot_segNum+=segNum# total number of segements in all data 
@@ -331,12 +335,13 @@ if __name__ =="__main__":
     OldSplist=[]
     spNum=30
     #test=list(range(80,86))
+
     testList=[4,16,20,27,29,30,36,37,42,45,49,62,66,67,68,
               71,74,84,90,93,96,105,108,109,110,111,132,139,
               148,155
               ]
     test=[29]
-    while(count<1):
+    while(count<1000):
         count+=1
         max_slope=np.tan(angle*(pi/180))
         w=SGwd_length
@@ -368,7 +373,9 @@ if __name__ =="__main__":
         ltMean=[]
         spList=rSp.Sampling(len(fileName),spNum,OldSplist)##簡單隨機抽樣樣品 list
         OldSplist.append(spList)
-        for i in testList :#len(fileName)
+        
+        
+        for i in spList :#len(fileName)
             #i=rndFile
             sensorType=fileName[i][6:-1]  
             #print(sensorType)
@@ -450,7 +457,7 @@ if __name__ =="__main__":
                  'min_interval_%':min_interval_percent,
                  'min_r2':min_r2,
                  'mean_segTol':[mean_segTol],
-                 'mean_totalLenght':[mean_totLen],
+                 'mean_totalLength':[mean_totLen],
                  'mean_compRatio':[mean_compRatio],
                  'All R2 R&S mean':allR2rns,
                  'All R2 P&R mean':allR2pnr,
@@ -468,11 +475,11 @@ if __name__ =="__main__":
                     'min_interval_%',
                     'min_r2',
                     'mean_segTol',
-                    'mean_totalLenght',
+                    'mean_totalLength',
                     'mean_compRatio',
-                    'All R2 R&S mean',
                     'All R2 P&R mean',
                     'All R2 P&S mean',
+                    'All R2 R&S mean',
                     'T R2 mean',
                     'H R2 mean',
                     'STD_All',
@@ -490,4 +497,7 @@ if __name__ =="__main__":
         dftolMean=pd.DataFrame(None,None)
         #dftolMean.to_csv(tolMeanFile,mode='a',line_terminator="\n")
         print('All is done in '+str(count))
-
+    AllSpList={'list':OldSplist}
+    dfAllSpList=pd.DataFrame(AllSpList)
+    AllSpListPath='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllSplist.csv'
+    dfAllSpList.to_csv(AllSpListPath,mode='w',header=None,index=None)
