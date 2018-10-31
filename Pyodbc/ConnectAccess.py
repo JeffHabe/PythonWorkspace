@@ -14,12 +14,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-
-mypath ='D:/PythonWorkspace/excelFolder/'
-
-import os
+import csv
 import win32com.client as win32
-
+from PIL import Image
+mypath ='D:/PythonWorkspace/excelFolder/'
 
 class MysqlUtil():  
     def __init__(self):  
@@ -247,7 +245,7 @@ if __name__=="__main__":
 # =============================================================================
     
     
-    
+
     
 
 # =============================================================================
@@ -257,38 +255,40 @@ if __name__=="__main__":
 #     db = sqlUtil.getConnect()
 #     cursor = db.cursor()
 #     SQL="""
-#     select value, timestamp
-#     from recording_data
-#     where [timestamp] >= #2018/12/3 00:00:00# and
-#     [timestamp] <= #2018/12/3 23:59:59#
+#     select distinct date_started,f.field_id,location,plant_name
+#     from [Sowing] as s , [FIELD] as f , [PLANT] as p
+#     where  s.plant_id= 1 and date_started = #2018-09-19# 
 #     """            
 #     tStart = time.time()#計時開始
 #     data=[]
 #     timestamp=[]      
+#     print ('(','date_started',' ','field_id',' ','location','  plant_name',')')
 #     for row in cursor.execute(SQL):                  # cursors are iterable
-#         #print (row[0])
-#         data.append(float(row[0]))
-#         timestamp.append(row[1])
+#         print ('(',dt.datetime.date(row[0]),'    ',row[1],'       ',row[2],'   ',row[3],')')
+#         #data.append(float(row[0]))
+#         #timestamp.append(row[1])
 #     cursor.commit()
 #     #print(data)
 #     cursor.close()
 #     db.close()
 #     tEnd = time.time()#計時結束
 #     timer=tEnd-tStart
-#     fig,ax1=plt.subplots()
-#     ax2=ax1.twinx()
-#     ax1.plot(timestamp,data,'r-')
-#     plt.gcf().autofmt_xdate()
-#     plt.show()
+# # =============================================================================
+# #     fig,ax1=plt.subplots()
+# #     ax2=ax1.twinx()
+# #     ax1.plot(timestamp,data,'r-')
+# #     plt.gcf().autofmt_xdate()
+# #     plt.show()
+# # =============================================================================
 #     print('執行時間：',timer,'。data 總數 ',len(data))
+# 
+# 
 # =============================================================================
 
 
 
-
-
+ 
 # =============================================================================
-#  
 #     ##比對原始數據與資料庫數據
 #     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
 #     sqlUtil=MysqlUtil()
@@ -297,10 +297,10 @@ if __name__=="__main__":
 #     SQL="""
 #     select value, timestamp
 #     from recording_data
-#     where [timestamp] >= #2019/3/8 00:00:00# and
-#     [timestamp] <= #2019/3/12 00:00:00# and 
+#     where [timestamp] >= #2018/1/1 00:00:00# and
+#     [timestamp] <= #2018/1/2 00:00:00# and 
 #     [node_id] = 1 and 
-#     [sensor_id] = 1
+#     [sensor_id] = 2
 #     """
 # # =============================================================================
 # # 
@@ -311,7 +311,7 @@ if __name__=="__main__":
 # # 
 # #         """        
 # # =============================================================================
-#             
+#          #insertinto Test for LFSDBdata_doubleBK
 #     tStart = time.time()#計時開始
 #     data=[]
 #     timestamp=[]      
@@ -319,73 +319,85 @@ if __name__=="__main__":
 #         #print (row[0])
 #         data.append(float(row[0]))
 #         timestamp.append(row[1])
+#    # print(data)
 #     cursor.commit()
 #     #print(data)
 #     cursor.close()
 #     db.close()
 #     tEnd = time.time()#計時結束
 #     timer=tEnd-tStart
-# # =============================================================================
-# #     df={'timestampe':timestamp,
-# #         'data':data}
-# #     fileNum=0
-# #     dataCSV=getFD.readCSV(fileName[fileNum])
-# # 
-# #     sum=0
-# #     pltData=[]
-# #     for i in range(len(dataCSV)):
-# #         pltData.append(dataCSV[i][3])
-# #         if(data[i]==dataCSV[i][3]):
-# #             sum+=1
-# #     
-# #     print('準確率:',(sum/len(dataCSV))*100)              
-# #   
-# # =============================================================================
-#     fig,ax1=plt.subplots()
-#     ax2=ax1.twinx()
-#     ax1.plot(timestamp,data,'r-')
-# # =============================================================================
-# #     ax2.plot(timestamp,pltData,'g')
-# #     print(type(timestamp[1]))
-# #     ax1.set_xlabel('time')
-# #     ax1.set_ylabel('db data', color='r')
-# #     ax2.set_ylabel('raw data', color='g')
-# # =============================================================================
-#     plt.gcf().autofmt_xdate()
-# 
+#     df={'timestampe':timestamp,
+#         'data':data}
+#     fileNum=0
+#     dataCSV=getFD.readCSV(fileName[fileNum])
+#     #print(dataCSV)
+#     sum=0
+#     pltData=[]
+#     for i in range(len(dataCSV)):
+#         pltData.append(dataCSV[i][3])
+#         if(data[i]==dataCSV[i][3]):
+#             sum+=1
+#     
+#     print('準確率:',(sum/len(dataCSV))*100)              
 #  
-#     plt.show()
+#     fig,ax1=plt.subplots()
+#     #ax2=ax1.twinx()
+#     ax1.plot(timestamp,data,'r-')
+#     ax1.set_xlabel('time')
+#     ax1.set_ylabel('db data value', color='r')
+#     plt.gcf().autofmt_xdate()
+#     plt.savefig('testplot1.pdf')
+#     #Image.open('testplot1.png').save('testplot1.jpg','JPEG')
+#     
+#     fig,ax2=plt.subplots()
+#     ax2.plot(timestamp,pltData,'g')
+#     ax2.set_ylabel('raw data value', color='g')
+#     ax2.set_xlabel('time')
+#     plt.gcf().autofmt_xdate()
+#     plt.savefig('testplot2.pdf')
+#     
+#     fig,ax3=plt.subplots()
+#     ax4=ax3.twinx()
+#     #fig,ax2=plt.subplots()
+#     ax3.plot(timestamp,data,'r-')
+#     ax4.plot(timestamp,pltData,'g:')
+#     ax3.set_xlabel('time')
+#     ax3.set_ylabel('db data value', color='r')
+#     ax4.set_ylabel('raw data value', color='g')
+#     plt.gcf().autofmt_xdate()
+#     #plt.show()
+#     plt.savefig('testplot3.pdf')
 #     print('執行時間：',timer,'。data 總數 ',len(data))
 #     print()
 #     
-#     
 # =============================================================================
+    
  
-# =============================================================================
-# #==========一般Select================================================#   
-#     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
-#     sqlUtil=MysqlUtil()
-#     db = sqlUtil.getConnect()
-#     cursor = db.cursor()
-#     SQL="""
-#     select *
-#     from NODE
-#     """            
-#     tStart = time.time()#計時開始
-#     data=[]
-#     timestamp=[]      
-#     for row in cursor.execute(SQL):                  # cursors are iterable
-#         print (row)
-#     cursor.commit()
-#     #print(data)
-#     cursor.close()
-#     db.close()
-#     tEnd = time.time()#計時結束
-#     timer=tEnd-tStart
-#     print('執行時間：',timer,'。data 總數 ',len(data))
-#     print()
-#     
-# =============================================================================
+#==========一般Select================================================#   
+    strdate=str(dt.datetime.utcfromtimestamp(1514764800))
+    sqlUtil=MysqlUtil()
+    db = sqlUtil.getConnect()
+    cursor = db.cursor()
+    SQL="""
+    select timestamp
+    from recording_data
+    where [timestamp]>= #2018/1/1 00:00:00#  
+    """            
+    tStart = time.time()#計時開始
+    data=[]
+    timestamp=[]      
+    for row in cursor.execute(SQL):                  # cursors are iterable
+        print (row)
+        data.append(row)
+    cursor.commit()
+    #print(data)
+    cursor.close()
+    db.close()
+    tEnd = time.time()#計時結束
+    timer=tEnd-tStart
+    print('執行時間：',timer,'。data 總數 ',len(data))
+    print()
+    
     
     
     
@@ -431,8 +443,8 @@ if __name__=="__main__":
 #          print("Successfully ",fileName[i],"times Insert Into")
 # =============================================================================
     
-   ##儲存原始感測數據(excel to db) 
 # =============================================================================
+#    ##儲存原始感測數據(excel to db) 
 #     fileNum=0
 #     dataCSV=getFD.readCSV(fileName[fileNum])
 #     print(fileName[fileNum],':',dataCSV[0])
