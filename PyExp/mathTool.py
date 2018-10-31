@@ -60,7 +60,7 @@ def polyLine(startPt,endPt,polyIndex,t,sgf,data):
     #=================chebyshev 回歸多項式 =========
     coeffRaw=chy.chebfit(x,vt,polyIndex)
     coeffSGF=chy.chebfit(x,y,polyIndex)
-    #print(np.poly1d(coeffRaw))
+
     ys_lineRaw=chy.chebval(x,coeffRaw)                    
     ys_lineSGF=chy.chebval(x,coeffSGF)                    
     #=================rsq: 決定係數=========
