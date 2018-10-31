@@ -28,7 +28,7 @@ def readCSV(mypath,fileName):
     for row in csv.DictReader(f):
         ms=float(row['timestamp'])
         date=datetime.datetime.utcfromtimestamp(ms)
-        #print(date)
+        print(date)
         times.append(date)
         data.append(float(row['value']))
     f.close()
