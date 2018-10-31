@@ -48,6 +48,6 @@ if __name__=="__main__":
     x = np.linspace(0, 1440,1440)
     for day in range(1):
         date=add1DpS(yr=2019,mth=7,d=day+1)
-        print(date[0])
+        print(date[2])
         print(f(date))
         pl.plot(date, f(date))
