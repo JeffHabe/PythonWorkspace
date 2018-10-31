@@ -304,7 +304,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
     #print(pltData)
     
     if isplot:
-        pltT.PlotLy(t,wdsize_percent,min_interval_percent,polyIndex,fileName,pltData,plotisOpen)
+        pltT.PlotLy(t,window_size_percent,min_interval_percent,polyIndex,fileName,pltData,plotisOpen)
     return dtMean
 
 
@@ -333,15 +333,13 @@ if __name__ =="__main__":
     spRatio=[]
     spTimer=[]
     OldSplist=[]
-    spNum=30
+    spNum=2
     #test=list(range(80,86))
 
-    testList=[4,16,20,27,29,30,36,37,42,45,49,62,66,67,68,
-              71,74,84,90,93,96,105,108,109,110,111,132,139,
-              148,155
-              ]
-    test=[29]
-    while(count<1000):
+    testList=[3,4,8,10,15,17,23,27,36,41,43,45,49,50,53,54,59,65,74,82,84,85,114,117,121,
+              123,130,140,154,156]
+    test=[80]
+    while(count<5):
         count+=1
         max_slope=np.tan(angle*(pi/180))
         w=SGwd_length
@@ -500,4 +498,8 @@ if __name__ =="__main__":
     AllSpList={'list':OldSplist}
     dfAllSpList=pd.DataFrame(AllSpList)
     AllSpListPath='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllSplist.csv'
-    dfAllSpList.to_csv(AllSpListPath,mode='w',header=None,index=None)
+    if (pth.isfile(AllSpListPath)!=True):  
+        dfAllSpList.to_csv(AllSpListPath,mode='w',header=None,index=None)
+    else:
+        dfAllSpList.to_csv(AllSpListPath,mode='a',header=None,index=None)
+    
