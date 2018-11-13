@@ -5,8 +5,11 @@ Created on Tue Oct  2 13:57:22 2018
 @author: Jeff PC
 """
 from plotly.offline import plot
+from plotly.offline import iplot
+
 import folderTool as fT
 import cufflinks as cf
+
 import plotly.graph_objs as go
 cf.go_offline()
 
