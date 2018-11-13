@@ -333,13 +333,13 @@ if __name__ =="__main__":
     spRatio=[]
     spTimer=[]
     OldSplist=[]
-    spNum=2
+    spNum=30
     #test=list(range(80,86))
 
     testList=[3,4,8,10,15,17,23,27,36,41,43,45,49,50,53,54,59,65,74,82,84,85,114,117,121,
               123,130,140,154,156]
     test=[80]
-    while(count<5):
+    while(count<1000):
         count+=1
         max_slope=np.tan(angle*(pi/180))
         w=SGwd_length
