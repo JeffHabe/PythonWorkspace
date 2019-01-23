@@ -139,7 +139,7 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
                 endPt=i+1
                 delta=endPt-startPt
                 coeff,ys_line,rsqSGF,rsqTT = mthT.polyLine(startPt,endPt,polyIndex,t,sgf,data)
-                if(rsqSGF>=Maxr2SGF):
+                if(rsqTT>=Maxr2SGF):
                      Maxr2SGF=rsqSGF
                      MaxYs=ys_line
                      #MaxStart=startPt
@@ -156,12 +156,12 @@ def Seg2poly(fileName,SGwd_length=11,SGpolyOrd=3,max_slope=1,min_r2=0.95,polyInd
                     endPt=MaxEnd
                     coeff=MaxCoeff
                     delta=endPt-startPt
-                    rsqSGF=Maxr2SGF
+                    rsqTT=Maxr2SGF
                     ys_line=MaxYs
                     delta=endPt-startPt
                     islimit=True
                 break
-        if (rsqSGF>=min_r2) or islimit :    
+        if (rsqTT>=min_r2) or islimit :    
 #====coeff[0] = A  coeff[1] = B coeff[2] = C; Ax^2+Bx+C
             #start.append(time[startPt])
             #end.append(time[endPt])
@@ -325,7 +325,7 @@ if __name__ =="__main__":
     
 
     Isplot=True
-    plotisOpen=False
+    plotisOpen=True
     #rndFile=88#random.randint(0,len(fileName))
     count=0
     reset=True
@@ -338,8 +338,8 @@ if __name__ =="__main__":
 
     testList=[3,4,8,10,15,17,23,27,36,41,43,45,49,50,53,54,59,65,74,82,84,85,114,117,121,
               123,130,140,154,156]
-    test=[80]
-    while(count<1000):
+    test=[15]
+    while(count<1):
         count+=1
         max_slope=np.tan(angle*(pi/180))
         w=SGwd_length
@@ -373,7 +373,7 @@ if __name__ =="__main__":
         OldSplist.append(spList)
         
         
-        for i in spList :#len(fileName)
+        for i in test :#len(fileName)
             #i=rndFile
             sensorType=fileName[i][6:-1]  
             #print(sensorType)
@@ -497,7 +497,7 @@ if __name__ =="__main__":
         print('All is done in '+str(count))
     AllSpList={'list':OldSplist}
     dfAllSpList=pd.DataFrame(AllSpList)
-    AllSpListPath='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllSplist.csv'
+    AllSpListPath='Data_csv\\SlidingWindow\\Chebyshev\\Mean\\AllSplistTestRAW.csv'
     if (pth.isfile(AllSpListPath)!=True):  
         dfAllSpList.to_csv(AllSpListPath,mode='w',header=None,index=None)
     else:

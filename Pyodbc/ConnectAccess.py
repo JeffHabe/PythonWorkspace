@@ -25,7 +25,7 @@ class MysqlUtil():
 
     def getConnect(self):
         print ("Begin ACCESS ODBC connect.....")
-        DBfile = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_double.accdb'
+        DBfile = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
         db = pypyodbc.connect('DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};UID=admin;UserCommitSync=Yes;Threads=3;SafeTransactions=0;PageTimeout=5;MaxScanRows=8;MaxBufferSize=2048;FIL={MS Access};DriverId=25;DefaultDir=D:/KengWoNCHUFile/AccessDB;DBQ='+DBfile)
         print("Successfully established connection....")
         return db
@@ -118,8 +118,6 @@ def SQLdelete():
     cursor = db.cursor()
     SQLdel=""" 
     delete from recording_data 
-    where 
-    [timestamp]>=#2018/12/3#; 
     """
 # =============================================================================
 #     SQLdel=""" 
@@ -147,8 +145,8 @@ def Ploty():
     
 def compactAccessDB():
     ##compact DB 
-    srcDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_double.accdb'
-    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_doubleTest.accdb'
+    srcDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
+    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份Test.accdb'
     oApp = win32.Dispatch('Access.Application')
     oApp.compactRepair(srcDB, destDB)
     print('...')
@@ -157,8 +155,8 @@ def compactAccessDB():
     time.sleep(0.01)
     print('...')
     oApp = win32.Dispatch('Access.Application')
-    srcbkDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_doubleTest.accdb'
-    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_double.accdb'
+    srcbkDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份Test.accdb'
+    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
     oApp.compactRepair(srcbkDB, destDB)
     time.sleep(0.01)
     print('...')
@@ -168,12 +166,12 @@ def compactAccessDB():
     oApp.Application.Quit()
     oApp = None 
     print('done Compaction')
-    path = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_double.accdb"
+    path = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb"
     if os.path.isfile(path):
         print('LFSDBdata_double exist ')
     
 def get_FileSize():
-    filePath = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_double.accdb"
+    filePath = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb"
     fsize = os.path.getsize(filePath)
     fsize = fsize/float(1024*1024)
     return round(fsize,2)    
@@ -191,12 +189,10 @@ if __name__=="__main__":
   
     
       
-# =============================================================================
-#     #Delete 
-#     SQLdelete()
-#     compactAccessDB()
-#     print()
-# =============================================================================
+    #Delete 
+    SQLdelete()
+    compactAccessDB()
+    print()
      
 # =============================================================================
 #     compactAccessDB()
@@ -373,33 +369,48 @@ if __name__=="__main__":
 # =============================================================================
     
  
-#==========一般Select================================================#   
-    strdate=str(dt.datetime.utcfromtimestamp(1514764800))
-    sqlUtil=MysqlUtil()
-    db = sqlUtil.getConnect()
-    cursor = db.cursor()
-    SQL="""
-    select timestamp
-    from recording_data
-    where [timestamp]>= #2018/1/1 00:00:00#  
-    """            
-    tStart = time.time()#計時開始
-    data=[]
-    timestamp=[]      
-    for row in cursor.execute(SQL):                  # cursors are iterable
-        print (row)
-        data.append(row)
-    cursor.commit()
-    #print(data)
-    cursor.close()
-    db.close()
-    tEnd = time.time()#計時結束
-    timer=tEnd-tStart
-    print('執行時間：',timer,'。data 總數 ',len(data))
-    print()
-    
-    
-    
+# =============================================================================
+# #==========一般Select================================================#   
+#     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
+#     sqlUtil=MysqlUtil()
+#     db = sqlUtil.getConnect()
+#     cursor = db.cursor()
+#     SQL="""
+#     select DISTINCT location , plant_name , date_started, date_ended
+#     from Sowing as s  , PLANT as p , FIELD as f
+#     where plant_name like '小%' and f.field_id like 'A';
+#     """            
+#     tStart = time.time()#計時開始
+# 
+#     timestamp=[]      
+#     datalst=()
+#     for row in cursor.execute(SQL):  # cursors are iterable
+#         print(len(row))
+#         print(row)
+#         cnt=0
+#         data=()
+#         for cnt in range(len(row)):
+#             if(cnt>1 and row[cnt]!=None ):
+#                 data=data+((row[cnt]).strftime("%Y/%m/%d"),)
+#             else:
+#                 data=data+(row[cnt],)
+#         datalst=datalst+(data,)
+# 
+#              
+#     print(datalst)
+#     cursor.commit()
+#     #print(data)
+#     cursor.close()
+#     db.close()
+#     tEnd = time.time()#計時結束
+#     timer=tEnd-tStart
+#     
+#     print('執行時間：',timer,'。data 總數 ',len(data))
+#     print()
+#     
+#     
+#     
+# =============================================================================
     
     
     ## Update 

@@ -65,8 +65,8 @@ def polyLine(startPt,endPt,polyIndex,t,sgf,data):
     ys_lineSGF=chy.chebval(x,coeffSGF)                    
     #=================rsq: 決定係數=========
     rsqSGF=round(coeff_of_determination(np.array(y),ys_lineRaw,startPt,endPt),2)
-    rsqTT=round(coeff_of_determination(np.array(vt),ys_lineRaw,startPt,endPt),2)
-    return coeffRaw,ys_lineRaw,rsqSGF,rsqTT
+    rsqRW=round(coeff_of_determination(np.array(vt),ys_lineRaw,startPt,endPt),2)
+    return coeffRaw,ys_lineRaw,rsqSGF,rsqRW
 
 # =============================================================================
 # if __name__ == "__main__":
