@@ -25,7 +25,7 @@ class MysqlUtil():
 
     def getConnect(self):
         print ("Begin ACCESS ODBC connect.....")
-        DBfile = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
+        DBfile = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed.accdb'
         db = pypyodbc.connect('DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};UID=admin;UserCommitSync=Yes;Threads=3;SafeTransactions=0;PageTimeout=5;MaxScanRows=8;MaxBufferSize=2048;FIL={MS Access};DriverId=25;DefaultDir=D:/KengWoNCHUFile/AccessDB;DBQ='+DBfile)
         print("Successfully established connection....")
         return db
@@ -92,7 +92,7 @@ def SQLsDatainsert(val):
     
     cursor = db.cursor()
     SQLin ="""
-    INSERT INTO recording_data ([node_id],[sensor_id],[timestamp],[value]) 
+    INSERT INTO Recording_data ([node_id],[sensor_id],[timestamp],[value]) 
     VALUES (?,?,?,?) 
     """
     #t=[(dataCSV[1][0],str(dataCSV[1][1]),dataCSV[1][2]),(dataCSV[2][0],str(dataCSV[2][1]),dataCSV[2][2])]
@@ -117,13 +117,13 @@ def SQLdelete():
     db = sqlUtil.getConnect()
     cursor = db.cursor()
     SQLdel=""" 
-    delete from recording_data 
+    delete from Recording_data 
     """
 # =============================================================================
 #     SQLdel=""" 
-#     delete from RAW_DATA 
+#     delete from Recording_data 
 #     where 
-#     [timestamp]>=#2018/2/7 00:00:00# and [timestamp]<=#2018/2/7 23:59:00#;
+#     [timestamp_started]>=#2020/1/1 00:00:00# and [timestamp_started]<#2029/5/1 00:00:00#;
 #     """
 # =============================================================================
     cursor.execute(SQLdel)
@@ -145,8 +145,8 @@ def Ploty():
     
 def compactAccessDB():
     ##compact DB 
-    srcDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
-    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份Test.accdb'
+    srcDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed.accdb'
+    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_Test.accdb'
     oApp = win32.Dispatch('Access.Application')
     oApp.compactRepair(srcDB, destDB)
     print('...')
@@ -155,8 +155,8 @@ def compactAccessDB():
     time.sleep(0.01)
     print('...')
     oApp = win32.Dispatch('Access.Application')
-    srcbkDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份Test.accdb'
-    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb'
+    srcbkDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_Test.accdb'
+    destDB = 'D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed.accdb'
     oApp.compactRepair(srcbkDB, destDB)
     time.sleep(0.01)
     print('...')
@@ -166,12 +166,12 @@ def compactAccessDB():
     oApp.Application.Quit()
     oApp = None 
     print('done Compaction')
-    path = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb"
+    path = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed.accdb"
     if os.path.isfile(path):
         print('LFSDBdata_double exist ')
     
 def get_FileSize():
-    filePath = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed_備份.accdb"
+    filePath = "D:\\PythonWorkspace\\Pyodbc\\Access DB\\LFSDBdata_Compressed.accdb"
     fsize = os.path.getsize(filePath)
     fsize = fsize/float(1024*1024)
     return round(fsize,2)    
@@ -189,56 +189,54 @@ if __name__=="__main__":
   
     
       
-    #Delete 
-    SQLdelete()
-    compactAccessDB()
-    print()
-     
+#    #Delete 
+#    SQLdelete()
+#    compactAccessDB()
+#    print()
+#     
 # =============================================================================
 #     compactAccessDB()
 # =============================================================================
     
-# =============================================================================
-#  ##Insert Into test sensor data for test limited db capacity 
-#     usetime=[] 
-#     startYear=2018
-#     startDay=3
-#     startMth=12
-#     stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
-#     for day in range(startDay,startDay+1):    
-#         date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
-#         value=mkData.f(date)
-#         print(date[0])
-#         data=[]      
-#         for sensor_id in range(1,8):
-#             for node_id in range(1,17):               
-#                 for i in range(len(date)):
-#                     #print(len(value))    
-#                     t=(node_id,sensor_id,date[i],value[i])
-#                     #print(t)
-#                     data.append(t)
-#                 #print(data[0][:2],'-',data[len(data)-1][:2])
-#         try:
-#             thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
-#             edDate=thisDate.date().strftime("%m-%d")
-#             usetime.append(SQLsDatainsert(data))
-#         except Exception:
-#             break
-#     rawfilesize=get_FileSize()
-#     compactAccessDB()
-#     compfilesize=get_FileSize()
-#     print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
-#     record=[{'time':round(np.mean(usetime),2),
-#               'start_Date':stDate,
-#               'end_Date':edDate,
-#               'Compact Size':compfilesize}]
-#     print("record",record)
-#     df=pd.DataFrame(record,index=None)   
-#     df.to_csv('Insertinto_detailData.csv',mode='a',columns=['time','start_Date','end_Date','Compact Size'],index=False)
-#         #finally:
-#             #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
-#   
-# =============================================================================
+ ##Insert Into test sensor data for test limited db capacity 
+    usetime=[] 
+    startYear=2018
+    startDay=1
+    startMth=1
+    stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
+    for day in range(startDay,startDay+1):    
+        date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
+        value=mkData.f(date)
+        print(date[0])
+        data=[]      
+        for sensor_id in range(1,8):
+            for node_id in range(1,17):               
+                for i in range(len(date)):
+                    #print(len(value))    
+                    t=(node_id,sensor_id,date[i],value[i])
+                    #print(t)
+                    data.append(t)
+                #print(data[0][:2],'-',data[len(data)-1][:2])
+        try:
+            thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
+            edDate=thisDate.date().strftime("%m-%d")
+            usetime.append(SQLsDatainsert(data))
+        except Exception:
+            break
+    rawfilesize=get_FileSize()
+    compactAccessDB()
+    compfilesize=get_FileSize()
+    print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
+    record=[{'time':round(np.mean(usetime),2),
+              'start_Date':stDate,
+              'end_Date':edDate,
+              'Compact Size':compfilesize}]
+    print("record",record)
+    df=pd.DataFrame(record,index=None)   
+    df.to_csv('Insertinto_detailData.csv',mode='a',columns=['time','start_Date','end_Date','Compact Size'],index=False)
+        #finally:
+            #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
+  
     
     
 
