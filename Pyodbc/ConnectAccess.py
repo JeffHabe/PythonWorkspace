@@ -188,55 +188,55 @@ if __name__=="__main__":
 
   
     
-      
-#    #Delete 
-#    SQLdelete()
-#    compactAccessDB()
-#    print()
-#     
-# =============================================================================
+   #Delete 
+    SQLdelete()
+    compactAccessDB()
+    print()
+    
 #     compactAccessDB()
 # =============================================================================
     
- ##Insert Into test sensor data for test limited db capacity 
-    usetime=[] 
-    startYear=2018
-    startDay=1
-    startMth=1
-    stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
-    for day in range(startDay,startDay+1):    
-        date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
-        value=mkData.f(date)
-        print(date[0])
-        data=[]      
-        for sensor_id in range(1,8):
-            for node_id in range(1,17):               
-                for i in range(len(date)):
-                    #print(len(value))    
-                    t=(node_id,sensor_id,date[i],value[i])
-                    #print(t)
-                    data.append(t)
-                #print(data[0][:2],'-',data[len(data)-1][:2])
-        try:
-            thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
-            edDate=thisDate.date().strftime("%m-%d")
-            usetime.append(SQLsDatainsert(data))
-        except Exception:
-            break
-    rawfilesize=get_FileSize()
-    compactAccessDB()
-    compfilesize=get_FileSize()
-    print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
-    record=[{'time':round(np.mean(usetime),2),
-              'start_Date':stDate,
-              'end_Date':edDate,
-              'Compact Size':compfilesize}]
-    print("record",record)
-    df=pd.DataFrame(record,index=None)   
-    df.to_csv('Insertinto_detailData.csv',mode='a',columns=['time','start_Date','end_Date','Compact Size'],index=False)
-        #finally:
-            #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
-  
+# =============================================================================
+#  ##Insert Into test sensor data for test limited db capacity 
+#     usetime=[] 
+#     startYear=2018
+#     startDay=1
+#     startMth=1
+#     stDate=dt.datetime(startYear,startMth,startDay).date().strftime("%m-%d")
+#     for day in range(startDay,startDay+1):    
+#         date=mkData.add1DpS(yr=startYear,mth=startMth,d=day)
+#         value=mkData.f(date)
+#         print(date[0])
+#         data=[]      
+#         for sensor_id in range(1,8):
+#             for node_id in range(1,17):               
+#                 for i in range(len(date)):
+#                     #print(len(value))    
+#                     t=(node_id,sensor_id,date[i],value[i])
+#                     #print(t)
+#                     data.append(t)
+#                 #print(data[0][:2],'-',data[len(data)-1][:2])
+#         try:
+#             thisDate=(dt.datetime.fromtimestamp(date[0].timestamp()-86400))
+#             edDate=thisDate.date().strftime("%m-%d")
+#             usetime.append(SQLsDatainsert(data))
+#         except Exception:
+#             break
+#     rawfilesize=get_FileSize()
+#     compactAccessDB()
+#     compfilesize=get_FileSize()
+#     print('Mean: ',round(np.mean(usetime),2),'輸入完大小',rawfilesize,'壓縮後大小',compfilesize)
+#     record=[{'time':round(np.mean(usetime),2),
+#               'start_Date':stDate,
+#               'end_Date':edDate,
+#               'Compact Size':compfilesize}]
+#     print("record",record)
+#     df=pd.DataFrame(record,index=None)   
+#     df.to_csv('Insertinto_detailData.csv',mode='a',columns=['time','start_Date','end_Date','Compact Size'],index=False)
+#         #finally:
+#             #pd.DataFrame(dictTime).to_csv('Insertinto_spend_Time.csv',mode='a',header=None)        
+#   
+# =============================================================================
     
     
 
@@ -258,7 +258,8 @@ if __name__=="__main__":
 #     timestamp=[]      
 #     print ('(','date_started',' ','field_id',' ','location','  plant_name',')')
 #     for row in cursor.execute(SQL):                  # cursors are iterable
-#         print ('(',dt.datetime.date(row[0]),'    ',row[1],'       ',row[2],'   ',row[3],')')
+#         print(row)
+#         #print ('(',dt.datetime.date(row[0]),'    ',row[1],'       ',row[2],'   ',row[3],')')
 #         #data.append(float(row[0]))
 #         #timestamp.append(row[1])
 #     cursor.commit()
@@ -276,8 +277,8 @@ if __name__=="__main__":
 # # =============================================================================
 #     print('執行時間：',timer,'。data 總數 ',len(data))
 # 
-# 
 # =============================================================================
+
 
 
 
@@ -366,36 +367,98 @@ if __name__=="__main__":
 #     
 # =============================================================================
     
- 
 # =============================================================================
+#  
 # #==========一般Select================================================#   
 #     strdate=str(dt.datetime.utcfromtimestamp(1514764800))
 #     sqlUtil=MysqlUtil()
 #     db = sqlUtil.getConnect()
 #     cursor = db.cursor()
+# # =============================================================================
+# #     SQL="""
+# #     select DISTINCT location , plant_name , date_started, date_ended
+# #     from Sowing as s  , PLANT as p , FIELD as f
+# #     where plant_name like '小%' and f.field_id like 'A';
+# #     """    
+# # =============================================================================
+# 
 #     SQL="""
-#     select DISTINCT location , plant_name , date_started, date_ended
-#     from Sowing as s  , PLANT as p , FIELD as f
-#     where plant_name like '小%' and f.field_id like 'A';
-#     """            
+#     select DISTINCT location , p.plant_name , p.fertilizer,s.sowing_date, s.harvest_date
+#     from  PLANT as p , Sowing as s, FIELD as f , FIELDWORK as fw
+#     where f.field_id='f001'and p.plant_id=s.plant_id  and s.field_id=f.field_id and fw.field_id=s.field_id
+#     """         
+#     SQL5="""
+#     SELECT PLANT.plant_name, FIELD.location, Sowing.sowing_date, Sowing.harvest_date, Sowing.output, Sowing.price, [price]*[output]*1.6 AS 總售價
+#     FROM FIELD INNER JOIN (PLANT INNER JOIN Sowing ON PLANT.[plant_id] = Sowing.[plant_id])
+#     ON FIELD.[field_id] = Sowing.[field_id]
+#     WHERE Sowing.[harvest_date]=>#2018/9/1# and Sowing.[harvest_date]<=#2018/10/30#;
+#     """  
+#     SQL15="""
+#     SELECT p.plant_name, f.location, s.sowing_date, s.harvest_date, s.output, s.price, round([price]*[output]*1.6,2)AS 總售價
+#     FROM FIELD as f,PLANT as p, Sowing as s
+#     WHERE f.field_id=s.field_id and p.plant_id=s.plant_id and s.harvest_date>=#2018/9/1# and s.harvest_date<=#2018/10/30# 
+#     ORDER BY p.plant_name ASC;
+#     """  
+#     
+#     SQL6="""
+#     SELECT round(avg(s.output),2) as 平均產量,Round(avg(s.price),2)  as 平均售價
+#     FROM FIELD as f,PLANT as p, Sowing as s
+#     WHERE f.field_id=s.field_id and p.plant_id=s.plant_id and s.harvest_date>=#2018/9/1# and s.harvest_date<=#2018/10/30# 
+#     ;
+#     """  
 #     tStart = time.time()#計時開始
 # 
 #     timestamp=[]      
 #     datalst=()
-#     for row in cursor.execute(SQL):  # cursors are iterable
-#         print(len(row))
-#         print(row)
-#         cnt=0
+# # =============================================================================
+# #     for row in cursor.execute(SQL):  # cursors are iterable
+# #         #print(len(row))
+# #         #print(row)
+# #         cnt=0
+# #         data=()
+# #         for cnt in range(len(row)):
+# #             if(cnt>2 and row[cnt]!=None ):
+# #                 data=data+((row[cnt]).strftime("%Y/%m/%d"),)
+# #             else:
+# #                 data=data+(row[cnt],)
+# #         datalst=datalst+(data,)
+# # 
+# #     print(datalst)
+# # =============================================================================
+#     
+#     cursor.execute(SQL15)
+#     result_set = cursor.fetchall()
+#     results = {}
+#     column = 0
+# # =============================================================================
+# #     for d in cursor.description:
+# #         results[d[0]] = column
+# #         column = column + 1
+# #     print(results)
+# # =============================================================================
+#     field_name = [field[0] for field in cursor.description]
+#     for f_n in range(len(field_name)):     
+#         print(field_name[f_n],'  ', end='')
+#     print()
+#     for row in result_set:
+#         #print(row)
 #         data=()
 #         for cnt in range(len(row)):
-#             if(cnt>1 and row[cnt]!=None ):
+#             if(cnt>=2 and cnt<=3):
 #                 data=data+((row[cnt]).strftime("%Y/%m/%d"),)
 #             else:
 #                 data=data+(row[cnt],)
-#         datalst=datalst+(data,)
-# 
-#              
-#     print(datalst)
+#         print("      ".join(str(i) for i in data)) 
+# # =============================================================================
+# #         datalst=datalst+(data,)
+# # 
+# #     print(datalst)
+# # =============================================================================
+# # =============================================================================
+# #         print ('(',row[0],row[1],row[2],row[3],
+# #                  row[4],row[5],row[6],row[7],row[8],row[9],row[10],')')
+# # =============================================================================
+#     print()
 #     cursor.commit()
 #     #print(data)
 #     cursor.close()
@@ -403,7 +466,7 @@ if __name__=="__main__":
 #     tEnd = time.time()#計時結束
 #     timer=tEnd-tStart
 #     
-#     print('執行時間：',timer,'。data 總數 ',len(data))
+#     print('執行時間：',timer,'。data 總數 ',len(result_set))
 #     print()
 #     
 #     
