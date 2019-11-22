@@ -6,7 +6,7 @@ Created on Tue Oct  2 13:52:32 2018
 """
 
 from os import walk,makedirs
-import datetime
+import datetime,time
 import os.path as pth 
 #mypath ='excelFolder/'
 import csv 
@@ -27,7 +27,10 @@ def readCSV(mypath,fileName):
     f = open(mypath+fileName+'.csv', 'r')
     for row in csv.DictReader(f):
         ms=float(row['timestamp'])
-        date=datetime.datetime.fromtimestamp(ms)
+        #print(ms)
+        date=datetime.datetime.utcfromtimestamp(ms)
+        #print(time.mktime(date.timetuple()))
+        #date1=datetime.datetime.utcfromtimestamp(ms).strftime('%Y-%m-%d %H:%M:%S.%f')
         #print(date)
         times.append(date)
         data.append(float(row['value']))

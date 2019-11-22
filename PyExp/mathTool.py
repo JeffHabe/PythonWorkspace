@@ -7,7 +7,7 @@ Created on Tue Oct  2 14:02:14 2018
 
 import numpy as np
 from numpy.polynomial import chebyshev as chy
-
+import warnings
 
 def rsq(x,y,pfit):
     if (len(y)==len(pfit)):
@@ -58,11 +58,12 @@ def polyLine(startPt,endPt,polyIndex,t,sgf,data):
     #                     ys_line=np.polyval(tp,x)
     # =============================================================================
     #=================chebyshev 回歸多項式 =========
-    coeffRaw=chy.chebfit(x,vt,polyIndex)
+  
+    coeffRaw=chy.chebfit(x,vt,polyIndex)     
     coeffSGF=chy.chebfit(x,y,polyIndex)
-
     ys_lineRaw=chy.chebval(x,coeffRaw)                    
-    ys_lineSGF=chy.chebval(x,coeffSGF)                    
+    ys_lineSGF=chy.chebval(x,coeffSGF)
+                   
     #=================rsq: 決定係數=========
     rsqSGF=round(coeff_of_determination(np.array(y),ys_lineRaw,startPt,endPt),2)
     rsqRW=round(coeff_of_determination(np.array(vt),ys_lineRaw,startPt,endPt),2)
